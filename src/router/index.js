@@ -1,13 +1,16 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import ElementUi from 'element-ui'
+import ElementCss from 'element-ui/lib/theme-chalk/index.css'
 
 //.是代表文件所在层，@在/build/webpack.base.conf.js中配置的
 import main from '../view/main'
 import test from '../view/test'
+import login from '../view/user/login'
 
 Vue.use(VueRouter)
 Vue.use(ElementUi)
+Vue.use(ElementCss)
 
 export default new VueRouter({
   routes: [
@@ -22,6 +25,12 @@ export default new VueRouter({
       name: 'main',
       component: main,
       meta: {title: '城主无敌',keepalive: false}
+    },
+    {
+      path: '/login',
+      name: 'login',
+      component: login,
+      meta: {title: '欢迎登陆',keepalive: false}
     }
   ]
 })
