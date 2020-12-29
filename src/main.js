@@ -3,7 +3,6 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'//自动会扫描包下全部
-
 //开发提醒功能
 Vue.config.productionTip = false
 new Vue({

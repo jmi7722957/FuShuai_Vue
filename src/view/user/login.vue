@@ -1,6 +1,6 @@
 <template>
   <div id="login main">
-    <el-form :model="userForm" :rules="rules" ref="userForm" status-icon label-width="100px" class="demo-ruleForm">
+    <el-form :model="userForm" :rules="rules" ref="userForm" status-icon label-width="100px" class="login">
       <el-form-item label="账号" prop="username">
         <el-input type="text" v-model="userForm.username"></el-input>
       </el-form-item>
@@ -16,7 +16,10 @@
 </template>
 
 <script>
+/*后端交互*/
+
 export default {
+
   name: 'login',
   data() {
     var validUsername = (rule, value, callback) => {
@@ -45,14 +48,34 @@ export default {
         password: [
           { validator: validPassword, trigger: 'blur' }
         ]
-      }
+      },
     };
   },
   methods: {
     submitForm(value) {
       this.$refs[value].validate((valid) => {
         if (valid) {
-          alert('submit!');
+          //使用post请求，属性要用data,使用get才是params
+          this.axios({
+            method: 'post',
+            url: 'http://localhost:8081/user/login',
+            data:{
+              p_username:this.userForm.username,
+              p_password:this.userForm.password
+            }
+          }).then(response=> {
+            if(response.data)
+            {
+              //console.log(response.data);
+              var username = response.data.username
+              var annotation = response.data.annotation
+              this.$router.push({name:'main',params:{username:username,annotation:annotation}})
+              //this.$router.replace('/login') //替代,url
+            }else{
+              alert("登录失败");//跳转,name
+            }
+          })
+
         } else {
           console.log('error submit!!');
           return false;
