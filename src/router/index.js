@@ -8,6 +8,7 @@ import main from '../view/main'
 import test from '../view/main/test'
 import list from '../view/main/list'
 import login from '../view/user/login'
+import register from '../view/main/register'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
 
@@ -23,8 +24,7 @@ export default new VueRouter({
       path: '/main',
       name: 'main',
       component: main,
-      children:[
-        {
+      children:[{
           path: '/test',
           name: 'test',
           component: test,
@@ -32,9 +32,13 @@ export default new VueRouter({
         {
           path: '/list',
           name: 'list',
-          component: list
-        }
-      ]
+          component: list,
+          children:[{
+              path: '/register',
+              name: 'register',
+              component: register
+            }]
+        }]
     },
     {
       path: '/login',

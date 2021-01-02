@@ -1,15 +1,24 @@
 <template>
-  <div id="main">
+  <div>
     <el-container>
-      <el-header>Header</el-header>
+      <el-header height="200">
+        <div class="block">
+<!--          <img  id="imghead" src="../img/fushuai.jpg" height="80px">-->
+          <el-image style="height: 100px" :src=imgurl fit="contain"></el-image>
+          <span>欢迎用户：{{userData.username}}</span>
+        </div>
+      </el-header>
       <el-main>
         <el-menu
           mode="horizontal"
-          background-color="#545c64">
-          <el-menu-item> <router-link to="/list">list</router-link></el-menu-item>
-          <el-menu-item> <router-link to="/test">test</router-link></el-menu-item>
+          background-color="Black"
+          :router=true>       <!-- router开启index跳转模式 -->
+          <el-menu-item index="/list">list</el-menu-item>
+          <el-menu-item index="/test">test</el-menu-item>
         </el-menu>
-        <router-view></router-view>
+
+        <router-view v-bind:userData="userData"></router-view>
+
       </el-main>
       <el-footer>Footer</el-footer>
     </el-container>
@@ -18,16 +27,18 @@
 </template>
 
 <script>
-import axios from 'axios'
+import logo from  '../img/fushuai.jpg'
 
 export default {
   name: 'main',
   data(){
     return {
-      userList:{
-        username:'',
-        annotation:''
-      }
+      userData:{
+        username:'root',
+        annotation:'城主',
+        id:'1'
+      },
+      imgurl:logo
     }
   },
   created () {
@@ -41,9 +52,9 @@ export default {
       //有值传过来才传参
       if (this.$route.params.username!==undefined)
       {
-        this.userList = this.$route.params
+        this.userData = this.$route.params
       }
-      if (this.userList.username===''){
+      if (this.userData.username===''){
         alert('您未登录');
         this.$router.push('login');
       }else {

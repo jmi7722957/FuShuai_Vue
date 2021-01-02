@@ -1,5 +1,5 @@
 <template>
-  <div id="login main">
+  <div>
     <el-form :model="userForm" :rules="rules" ref="userForm" status-icon label-width="100px" class="login">
       <el-form-item label="账号" prop="username">
         <el-input type="text" v-model="userForm.username"></el-input>
