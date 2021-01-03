@@ -3,7 +3,6 @@
     <el-container>
       <el-header height="200">
         <div class="block">
-<!--          <img  id="imghead" src="../img/fushuai.jpg" height="80px">-->
           <el-image style="height: 100px" :src=imgurl fit="contain"></el-image>
           <span>欢迎用户：{{userData.username}}</span>
         </div>
@@ -28,6 +27,7 @@
 
 <script>
 import logo from  '../img/fushuai.jpg'
+
 
 export default {
   name: 'main',

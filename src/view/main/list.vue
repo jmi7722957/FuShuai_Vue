@@ -86,13 +86,10 @@
       </el-table-column>
     </el-table>
 
-    <el-dialog title="添加客户" :visible.sync="DisplayBuff">
+
+    <el-dialog :visible.sync="DisplayBuff" :before-close="closeReg">
       <div slot="footer" class="dialog-footer">
-
-        <register v-bind:user-data="userData"></register>
-
-        <el-button @click="DisplayBuff = false">取 消</el-button>
-        <el-button type="primary" @click="DisplayBuff = false">确 定</el-button>
+        <register v-bind:userData="userData"></register>
       </div>
     </el-dialog>
 
@@ -102,6 +99,7 @@
 <script>
 import axios from 'axios'
 import register from './register'
+import bus from '../Bus'
 
 export default {
   name: 'list',
@@ -126,7 +124,7 @@ export default {
     }
   },/*装载完后执行*/
   components:{
-    register:register
+    register:register,
   },
   props:['userData'],
   mounted() {
@@ -176,23 +174,30 @@ export default {
       axios.get('http://localhost:8081/customer/list').then(response=>(this.customerList=response.data))
     },
     editCus(row){
-      console.log(row)
+      this.DisplayBuff = true;
+      //console.log(row)
+      bus.$emit('giveRow',row)
       //query传参要用path来引入，params传参要用name来引入
       //this.$router.push({name:"register",params:{seleType:"edit",student:row}});
       axios.get('http://localhost:8081/customer/list').then(response=>(this.customerList=response.data))
     },
     delCus(delNum){
-      this.$axios.post('/vinda_demo_wx/stu/del',{
+      axios.post('/vinda_demo_wx/stu/del',{
         p_del_list:delNum
       }).then(response =>{
         console.log(response.data)
-        axios.get('/vinda_demo_wx/stu/list').then(response=>(this.stulist=response.data))
+        axios.get('http://localhost:8081/customer/list').then(response=>(this.customerList=response.data))
       })
     },
     /*用于列里面的筛选*/
     filterHandler(value, row, column) {
       const property = column['property'];
       return row[property] === value;
+    },
+    closeReg(){
+      this.$data.DisplayBuff=false;
+      bus.$emit('closeReg');
+      axios.get('http://localhost:8081/customer/list').then(response=>(this.customerList=response.data))
     }
   }
 }
