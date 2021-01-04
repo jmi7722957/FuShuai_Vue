@@ -71,7 +71,7 @@ export default {
   },
   methods: {
     onAdd() {
-      //console.log(this.form);
+      console.log(this.form);
       this.axios({
         method: 'post',
         url:'http://localhost:8081/customer/add',
@@ -95,7 +95,7 @@ export default {
       })
     },
     onEdit() {
-      //console.log(this.form);
+      console.log(this.form);
       this.axios({
         method: 'post',
         url:'http://localhost:8081/customer/edit',
@@ -112,7 +112,6 @@ export default {
         if (response.data===true)
         {
           alert("修改成功！")
-          this.resetForm();
         }else{
           alert("修改失败！！！")
         }

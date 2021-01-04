@@ -5,7 +5,7 @@
       <el-col :span="1.5">
         <el-button @click="addCus()">添加客户</el-button>
       </el-col>
-      <el-col :span="1.5"><el-button @click="delCus($data.p_idList)">删除</el-button></el-col>
+      <el-col :span="1.5"><el-button @click="delCus()">删除</el-button></el-col>
       <el-col :span="1.5">
         <el-input v-model="search" size="max" placeholder="请输入名字"/>
       </el-col>
@@ -23,7 +23,7 @@
       :data="customerList.filter(data => !search || data.name.toLowerCase().includes(search.toLowerCase()))"
       stripe
       border
-      @selection-change="getDelId"
+      @selection-change="getSelectId"
     ><!--stripe斑马线-->
       <el-table-column
         type="selection">
@@ -118,7 +118,7 @@ export default {
         name:'城主',
         sex:'M'
       },
-      delIdList:'',//用于批量删除
+      delIdList:[],//用于批量删除
       search: '',//搜索框里面的值
       DisplayBuff: false,
     }
@@ -150,21 +150,6 @@ export default {
       /*$refs获取所有标注了ref的属性*/
       this.$refs.filterTable.clearFilter();
     },
-    getDelId(val) {
-      //console.log(val);
-      var idList = '';
-      val.forEach(function(entity){
-        if (idList == null || idList === "")
-        {
-          idList = entity.id;
-        }
-        else {
-          idList = idList + "," + entity.id;
-        }
-      });
-      this.delIdList=idList;
-      //alert(this.p_idList);
-    },
     orderCus(){
     },
     addCus(){
@@ -181,12 +166,33 @@ export default {
       //this.$router.push({name:"register",params:{seleType:"edit",student:row}});
       axios.get('http://localhost:8081/customer/list').then(response=>(this.customerList=response.data))
     },
-    delCus(delNum){
-      axios.post('/vinda_demo_wx/stu/del',{
-        p_del_list:delNum
+    getSelectId(val){
+      var li = [];
+      val.forEach(function(element){
+        var id=element.id;
+        li.push(id)
+      });
+      this.$data.delIdList=li;
+      console.log(this.$data.delIdList)
+    },
+    delCus(){
+      console.log(this.delIdList);
+      this.axios({
+        method:'post',
+        url:'http://localhost:8081/customer/delete',
+        data:{
+          p_del_list:this.delIdList
+        }
       }).then(response =>{
-        console.log(response.data)
-        axios.get('http://localhost:8081/customer/list').then(response=>(this.customerList=response.data))
+        //console.log(response.data)
+        if (response.data===true)
+        {
+          alert("删除成功！")
+          axios.get('http://localhost:8081/customer/list').then(response=>(this.customerList=response.data))
+        }else{
+          alert("删除失败！！！")
+          axios.get('http://localhost:8081/customer/list').then(response=>(this.customerList=response.data))
+        }
       })
     },
     /*用于列里面的筛选*/
