@@ -1,8 +1,22 @@
 // The Vue build version to load with the `import` command
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
+import ElementUi from 'element-ui'
+import ElementCss from 'element-ui/lib/theme-chalk/index.css'
 import Vue from 'vue'
 import App from './App'
 import router from './router'//自动会扫描包下全部
+import echarts from 'echarts'
+import VueAxios from "vue-axios";
+import axios from "axios";
+import VueRouter from "vue-router";
+
+
+Vue.use(VueAxios, axios)
+Vue.use(ElementUi)
+Vue.use(ElementCss)
+Vue.use(VueRouter)
+
+Vue.prototype.$echarts = echarts
 //开发提醒功能
 Vue.config.productionTip = false
 new Vue({
