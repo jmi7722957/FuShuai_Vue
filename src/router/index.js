@@ -22,12 +22,14 @@ export default new VueRouter({
           path: '/list',
           name: 'list',
           component: list,
-          children:[{
+          children:[
+            {
               path: '/register',
               name: 'register',
               component: register
             }]
-        }]
+        }
+      ]
     },
     {
       path: '/login',
