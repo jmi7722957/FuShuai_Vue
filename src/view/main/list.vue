@@ -86,6 +86,7 @@
       </el-table-column>
     </el-table>
 
+    <chart></chart>
 
     <el-dialog :visible.sync="DisplayBuff" :before-close="closeReg">
       <div slot="footer" class="dialog-footer">
@@ -100,6 +101,7 @@
 <script>
 import axios from 'axios'
 import register from './register'
+import addressEchart from '../echarts/addressEchart'
 import bus from '../Bus'
 
 export default {
@@ -125,12 +127,13 @@ export default {
     }
   },/*装载完后执行*/
   components:{
-    register:register
+    register:register,
+    chart:addressEchart
   },
   props:['userData'],
   mounted() {
     //console.log(this.userData)
-    axios.get('http://localhost:8081/customer/list').then(response=>(this.customerList=response.data))
+    //axios.get('http://localhost:8081/customer/list').then(response=>(this.customerList=response.data))
     //xios.get('http://localhost:8081/customer/list').then(response=>(console.log(response.data)))
   },
   methods: {

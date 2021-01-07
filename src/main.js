@@ -5,18 +5,19 @@ import ElementCss from 'element-ui/lib/theme-chalk/index.css'
 import Vue from 'vue'
 import App from './App'
 import router from './router'//自动会扫描包下全部
-import echarts from 'echarts'
 import VueAxios from "vue-axios";
 import axios from "axios";
+import Echarts from 'echarts'
 import VueRouter from "vue-router";
 
 
 Vue.use(VueAxios, axios)
+Vue.use(Echarts)
 Vue.use(ElementUi)
 Vue.use(ElementCss)
 Vue.use(VueRouter)
 
-Vue.prototype.$echarts = echarts
+Vue.prototype.$echarts = Echarts
 //开发提醒功能
 Vue.config.productionTip = false
 new Vue({
