@@ -2,7 +2,7 @@
   <div id="register">
     <p>{{userData.username}}</p>
 <!--    <p>{{$route.params}}</p>-->
-    <el-form ref="cusForm" :model="form" label-width="80px">
+    <el-form ref="cusForm" :model="form" :rules="rules" status-icon label-width="80px">
       <el-form-item label="姓名" prop="name">
         <el-input v-model="form.name"></el-input>
       </el-form-item>
@@ -41,6 +41,15 @@ import bus from '../Bus'
 
 export default {
   data() {
+    var validPhone = (rule, value, callback) => {
+      if (value.length>15) {
+        callback(new Error('号码长度不能超过15位'));
+      }else if(isNaN(value)){
+        callback(new Error('电话号码格式不对'));
+      }else {
+        callback();
+      }
+    };
     return {
       form: {
         id:'',
@@ -50,7 +59,12 @@ export default {
         phone:'',
         introducer:''
       },
-      seleType:''
+      seleType:'',
+      rules: {
+        phone: [
+          { validator: validPhone, trigger: ['blur','change']}
+        ]
+      },
     }
   },
   //prop 是子组件用来接受父组件传递过来的数据
@@ -71,26 +85,33 @@ export default {
   },
   methods: {
     onAdd() {
-      console.log(this.form);
-      this.axios({
-        method: 'post',
-        url:'http://localhost:8081/customer/add',
-        data:{
-          p_name:this.form.name,
-          p_sex:this.form.sex,
-          p_address:this.form.address,
-          p_phone:this.form.phone,
-          p_introducer:this.form.introducer,
-          p_create_person:this.userData.username
-        }
-      }).then(response =>{
-        //console.log(response.data)
-        if (response.data===true)
-        {
-          alert("添加成功！")
-          this.resetForm();
+      //rules通过才能发送命令
+      this.$refs['cusForm'].validate((valid) => {
+        if(valid){
+          //console.log(this.form)
+          this.axios({
+            method: 'post',
+            url: 'http://localhost:8081/customer/add',
+            data: {
+              p_name: this.form.name,
+              p_sex: this.form.sex,
+              p_address: this.form.address,
+              p_phone: this.form.phone,
+              p_introducer: this.form.introducer,
+              p_create_person: this.userData.username
+            }
+          }).then(response => {
+            //console.log(response.data)
+            if (response.data === true) {
+              alert('添加成功！')
+              this.resetForm()
+            } else {
+              alert('添加失败！！！')
+            }
+          })
         }else{
-          alert("添加失败！！！")
+          console.log('rules不通过error submit!!');
+          return false;
         }
       })
     },

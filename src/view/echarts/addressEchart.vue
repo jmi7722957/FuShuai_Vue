@@ -23,7 +23,7 @@ export default {
         title: '客户地址统计',
         address:[],
         numbers:[]
-      }
+      },
     }
   },
   methods:{

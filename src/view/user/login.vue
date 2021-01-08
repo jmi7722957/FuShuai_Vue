@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-form :model="userForm" :rules="rules" ref="userForm" status-icon label-width="100px" class="login">
+    <el-form :model="userForm" :rules="rules"  ref="userForm" status-icon label-width="100px" class="login">
       <el-form-item label="账号" prop="username">
         <el-input type="text" v-model="userForm.username"></el-input>
       </el-form-item>
@@ -8,7 +8,7 @@
         <el-input type="password" v-model="userForm.password"></el-input>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="submitForm('userForm')">提交</el-button>
+        <el-button type="primary" @click="submitForm('userForm')">登录</el-button>
         <el-button @click="resetForm('userForm')">重置</el-button>
       </el-form-item>
     </el-form>
@@ -53,8 +53,7 @@ export default {
   },
   methods: {
     submitForm(value) {
-      this.$refs[value].validate((valid) => {
-        if (valid) {
+      //rules通过才能发送命令
           //使用post请求，属性要用data,使用get才是params
           this.axios({
             method: 'post',
@@ -75,12 +74,6 @@ export default {
               alert("登录失败");//跳转,name
             }
           })
-
-        } else {
-          console.log('error submit!!');
-          return false;
-        }
-      });
     },
     resetForm(value) {
       this.$refs[value].resetFields();
