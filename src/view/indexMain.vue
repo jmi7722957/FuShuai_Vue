@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div id="main">
     <el-container>
       <el-header height="200">
         <div class="block">
@@ -30,7 +30,7 @@ import logo from  '../img/fushuai.jpg'
 
 
 export default {
-  name: 'main',
+  name: 'indexMain',
   data(){
     return {
       userData:{

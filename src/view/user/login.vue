@@ -42,7 +42,7 @@ export default {
         password: ''
       },
       rules: {
-        username: [
+        username: [     //validator验证器trigger触发
           { validator: validUsername, trigger: 'blur' }
         ],
         password: [

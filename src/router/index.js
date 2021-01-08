@@ -1,9 +1,9 @@
 //.是代表文件所在层，@在/build/webpack.base.conf.js中配置的
-import main from '../view/main'
+import indexMain from '../view/indexMain'
 import test from '../view/main/test'
 import list from '../view/main/list'
 import login from '../view/user/login'
-import register from '../view/main/register'
+import cusAddEdit from '../view/main/cusAddEdit'
 
 import VueRouter from "vue-router";
 
@@ -12,7 +12,7 @@ export default new VueRouter({
     {
       path: '/main',
       name: 'main',
-      component: main,
+      component: indexMain,
       children:[{
           path: '/test',
           name: 'test',
@@ -24,9 +24,9 @@ export default new VueRouter({
           component: list,
           children:[
             {
-              path: '/register',
-              name: 'register',
-              component: register
+              path: '/cusAddEdit',
+              name: 'cusAddEdit',
+              component: cusAddEdit
             }]
         }
       ]

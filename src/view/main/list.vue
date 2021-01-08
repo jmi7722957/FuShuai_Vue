@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div id="list">
 
     <el-row>
       <el-col :span="1.5">
@@ -100,7 +100,7 @@
 
 <script>
 import axios from 'axios'
-import register from './register'
+import register from './cusAddEdit'
 import addressEchart from '../echarts/addressEchart'
 import bus from '../Bus'
 
@@ -133,7 +133,7 @@ export default {
   props:['userData'],
   mounted() {
     //console.log(this.userData)
-    //axios.get('http://localhost:8081/customer/list').then(response=>(this.customerList=response.data))
+    axios.get('http://localhost:8081/customer/list').then(response=>(this.customerList=response.data))
     //xios.get('http://localhost:8081/customer/list').then(response=>(console.log(response.data)))
   },
   methods: {
@@ -211,12 +211,11 @@ export default {
       axios.get('http://localhost:8081/customer/list').then(response=>(this.customerList=response.data))
     }
   },
-  watch:{
+/*  watch:{
     DisplayBuff:function(val) {
       this.DisplayBuff = val;
-      this.
     }
-  }
+  }*/
 }
 </script>
 

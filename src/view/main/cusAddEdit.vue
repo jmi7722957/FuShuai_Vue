@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div id="register">
     <p>{{userData.username}}</p>
 <!--    <p>{{$route.params}}</p>-->
     <el-form ref="cusForm" :model="form" label-width="80px">
@@ -95,7 +95,7 @@ export default {
       })
     },
     onEdit() {
-      console.log(this.form);
+      //console.log(this.form);
       this.axios({
         method: 'post',
         url:'http://localhost:8081/customer/edit',
@@ -118,7 +118,10 @@ export default {
       })
     },
     resetForm() {
-      this.$refs['cusForm'].resetFields();
+      if(this.$refs['cusForm']){
+        this.$refs['cusForm'].resetFields();
+      }
+      this.$data.seleType='add'
     }
   }
 }
