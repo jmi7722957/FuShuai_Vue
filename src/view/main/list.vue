@@ -167,7 +167,6 @@ export default {
       //console.log(row)
       bus.$emit('giveRow',row)
       //query传参要用path来引入，params传参要用name来引入
-      //this.$router.push({name:"register",params:{seleType:"edit",student:row}});
       axios.get('http://localhost:8081/customer/list').then(response=> {
         this.customerList = response.data;
       });
@@ -210,6 +209,12 @@ export default {
       this.$data.DisplayBuff=false;
       bus.$emit('closeReg');
       axios.get('http://localhost:8081/customer/list').then(response=>(this.customerList=response.data))
+    }
+  },
+  watch:{
+    DisplayBuff:function(val) {
+      this.DisplayBuff = val;
+      this.
     }
   }
 }
