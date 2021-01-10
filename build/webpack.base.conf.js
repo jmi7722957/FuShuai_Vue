@@ -31,9 +31,12 @@ module.exports = {
       ? config.build.assetsPublicPath
       : config.dev.assetsPublicPath
   },
+
+  //在此自定义变量
   resolve: {
     extensions: ['.js', '.vue', '.json'],
     alias: {
+      'vendor':path.resolve(__dirname,'../src/vendor'),
       'vue$': 'vue/dist/vue.esm.js',
       '@': resolve('src'),
     }

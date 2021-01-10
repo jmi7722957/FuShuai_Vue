@@ -12,8 +12,20 @@
       <el-col :span="1.5">
         <el-button @click="clearFilter">清除所有过滤器</el-button>
       </el-col>
+
+      <!--导入excel数据-->
       <el-col :span="1.5">
-        <el-button @click="">调查</el-button>
+        <el-input type="file" @change="importf(this)" accept=".csv,
+         application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,
+          application/vnd.ms-excel"/>
+      </el-col>
+
+      <el-col :span="1.5">
+        <el-button @click="outExe">下载模板</el-button>
+      </el-col>
+
+      <el-col :span="1.5">
+        <el-button @click="export2Excel">导出excel</el-button>
       </el-col>
     </el-row>
 
@@ -86,6 +98,7 @@
       </el-table-column>
     </el-table>
 
+    //Echarts图表
     <chart></chart>
 
     <el-dialog :visible.sync="DisplayBuff" :before-close="closeReg">
@@ -114,8 +127,7 @@ export default {
         sex:'',
         address:'',
         phone:'',
-        introducer:'',
-        orderListId:''
+        introducer:''
       }],//用于添加编辑
       query:{
         name:'城主',
@@ -137,8 +149,8 @@ export default {
     //xios.get('http://localhost:8081/customer/list').then(response=>(console.log(response.data)))
   },
   methods: {
-    sexChange:function (row, column)
-    {//获取用户的选中，在form里面监视select的值
+    sexChange:function (row, column){
+      //获取用户的选中，在form里面监视select的值
       var date = row[column.property];
       if (date==='M'){
         return '男'
@@ -209,6 +221,112 @@ export default {
       this.$data.DisplayBuff=false;
       bus.$emit('closeReg');
       axios.get('http://localhost:8081/customer/list').then(response=>(this.customerList=response.data))
+    },
+
+    //excel模块
+    importf(obj) {
+      let _this = this;
+      let inputDOM = this.$refs.inputer;   // 通过DOM取文件数据
+      this.file = event.currentTarget.files[0];
+      var rABS = false; //是否将文件读取为二进制字符串
+      var f = this.file;
+      var reader = new FileReader();
+      //if (!FileReader.prototype.readAsBinaryString) {
+      FileReader.prototype.readAsBinaryString = function(f) {
+        var binary = "";
+        var rABS = false; //是否将文件读取为二进制字符串
+        var pt = this;
+        var wb; //读取完成的数据
+        var outdata;
+        var reader = new FileReader();
+        reader.onload = function(e) {
+          var bytes = new Uint8Array(reader.result);
+          var length = bytes.byteLength;
+          for(var i = 0; i < length; i++) {
+            binary += String.fromCharCode(bytes[i]);
+          }
+          var XLSX = require('xlsx');
+          if(rABS) {
+            wb = XLSX.read(btoa(fixdata(binary)), { //手动转化
+              type: 'base64'
+            });
+          } else {
+            wb = XLSX.read(binary, {
+              type: 'binary'
+            });
+          }
+          // outdata就是你想要的东西 excel导入的数据
+          outdata = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
+          // excel 数据再处理
+          let arr = []
+          outdata.map(v => {
+            //表头数组
+            let obj = {}
+            obj.id = v.ID
+            obj.name = v.姓名
+            obj.sex = v.性别
+            obj.address = v.地址
+            obj.phone = v.电话
+            obj.introducer = v.介绍人
+            arr.push(obj)
+          })
+          _this.accountList = [...arr];
+          console.log( _this.accountList)
+          _this.reload();
+        }
+        reader.readAsArrayBuffer(f);
+      }
+      if(rABS) {
+        reader.readAsArrayBuffer(f);
+      } else {
+        reader.readAsBinaryString(f);
+      }
+    },
+    exportExcel: function(){
+      require.ensure([], () => {
+        const { export_json_to_excel } = require('../../vendor/Export2Excel');
+        const tHeader = ['投资顾问', '产品', '持仓', '建仓时间', '建仓理由', "联系电话"]; //对应表格输出的title
+        const filterVal = ['nickname', 'product_name', 'STOCK_NAME', 'CREATE_DATE', 'product_status','reason','mobile']; // 对应表格输出的数据
+        console.log(returnCitySN);
+        const param = {
+          pageNumber : this.currentPage,
+          pageSize : this.pagesize,      // 99999
+          reasonStat: this.reasonStat,
+          mobile: this.search.mobile,
+          nickname: this.search.nickname,
+          productName: this.search.productName,
+          accessIp : returnCitySN["cip"],
+          accessCity : encodeURI(encodeURI(returnCitySN["cname"]))
+        };
+        getAllPortfolioPosition(param).then((data) => {
+          const exceldata = this.formatJson(filterVal, data.positions);
+          export_json_to_excel(tHeader, exceldata, '持仓监控excel');  //对应下载文件的名字
+        })
+      })
+    },
+
+    //导出模板
+    outExe: function() {
+      require.ensure([], () => {
+        const {export_json_to_excel} = require('../../vendor/Export2Excel'); //引入文件　　　　　　
+        const tHeader = ['ID', '姓名', '性别', '地址', '电话','介绍人']; //将对应的属性名转换成中文
+        const data = [];
+        export_json_to_excel(tHeader, data, '客户填写模板');
+      })
+    },
+    //导出数据
+    export2Excel() {
+      require.ensure([], () => {
+        const { export_json_to_excel } = require('../../vendor/Export2Excel');
+        const tHeader = ['ID', '姓名', '性别', '地址', '电话','介绍人']; //对应表格输出的title
+        const filterVal = ['id', 'name', 'sex', 'address', 'phone','introducer']; // 对应表格输出的数据
+        const list = this.customerList;
+        const data = this.formatJson(filterVal, list);
+        export_json_to_excel(tHeader, data, '客户表excel'); //对应下载文件的名字
+      })
+    },
+    formatJson(filterVal, jsonData) {
+      return jsonData.map(v => filterVal.map(j => v[j]))
     }
   },
 /*  watch:{
