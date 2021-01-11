@@ -15,17 +15,17 @@
 
       <!--导入excel数据-->
       <el-col :span="1.5">
-        <el-input type="file" @change="importf(this)" accept=".csv,
+        <el-input type="file" @change="importExcel(this)" accept=".csv,
          application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,
           application/vnd.ms-excel"/>
       </el-col>
 
       <el-col :span="1.5">
-        <el-button @click="outExe">下载模板</el-button>
+        <el-button @click="exportTemplate">下载模板</el-button>
       </el-col>
 
       <el-col :span="1.5">
-        <el-button @click="export2Excel">导出excel</el-button>
+        <el-button @click="exportExcel">导出excel</el-button>
       </el-col>
     </el-row>
 
@@ -116,6 +116,7 @@ import axios from 'axios'
 import register from './cusAddEdit'
 import addressEchart from '../echarts/addressEchart'
 import bus from '../Bus'
+import {export_json_to_excel} from '../../vendor/Export2Excel'
 
 export default {
   name: 'list',
@@ -223,8 +224,8 @@ export default {
       axios.get('http://localhost:8081/customer/list').then(response=>(this.customerList=response.data))
     },
 
-    //excel模块
-    importf(obj) {
+    //excel导入数据
+    importExcel(obj) {
       let _this = this;
       let inputDOM = this.$refs.inputer;   // 通过DOM取文件数据
       this.file = event.currentTarget.files[0];
@@ -282,42 +283,19 @@ export default {
         reader.readAsBinaryString(f);
       }
     },
-    exportExcel: function(){
-      require.ensure([], () => {
-        const { export_json_to_excel } = require('../../vendor/Export2Excel');
-        const tHeader = ['投资顾问', '产品', '持仓', '建仓时间', '建仓理由', "联系电话"]; //对应表格输出的title
-        const filterVal = ['nickname', 'product_name', 'STOCK_NAME', 'CREATE_DATE', 'product_status','reason','mobile']; // 对应表格输出的数据
-        console.log(returnCitySN);
-        const param = {
-          pageNumber : this.currentPage,
-          pageSize : this.pagesize,      // 99999
-          reasonStat: this.reasonStat,
-          mobile: this.search.mobile,
-          nickname: this.search.nickname,
-          productName: this.search.productName,
-          accessIp : returnCitySN["cip"],
-          accessCity : encodeURI(encodeURI(returnCitySN["cname"]))
-        };
-        getAllPortfolioPosition(param).then((data) => {
-          const exceldata = this.formatJson(filterVal, data.positions);
-          export_json_to_excel(tHeader, exceldata, '持仓监控excel');  //对应下载文件的名字
-        })
-      })
-    },
-
     //导出模板
-    outExe: function() {
+    exportTemplate: function() {
       require.ensure([], () => {
-        const {export_json_to_excel} = require('../../vendor/Export2Excel'); //引入文件　　　　　　
+        //const {export_json_to_excel} = require('../../vendor/Export2Excel'); //引入文件　　　　　　
         const tHeader = ['ID', '姓名', '性别', '地址', '电话','介绍人']; //将对应的属性名转换成中文
         const data = [];
         export_json_to_excel(tHeader, data, '客户填写模板');
       })
     },
     //导出数据
-    export2Excel() {
+    exportExcel() {
       require.ensure([], () => {
-        const { export_json_to_excel } = require('../../vendor/Export2Excel');
+        //const { export_json_to_excel } = require('../../vendor/Export2Excel');
         const tHeader = ['ID', '姓名', '性别', '地址', '电话','介绍人']; //对应表格输出的title
         const filterVal = ['id', 'name', 'sex', 'address', 'phone','introducer']; // 对应表格输出的数据
         const list = this.customerList;

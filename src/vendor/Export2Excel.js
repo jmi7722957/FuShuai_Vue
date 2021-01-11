@@ -1,7 +1,11 @@
-/* eslint-disable */
-require('script-loader!file-saver');
+/* 原版导入,挂载到全局环境下*/
+/*require('script-loader!file-saver');
 require('script-loader!@/vendor/Blob');
-require('script-loader!xlsx/dist/xlsx.core.min');
+require('script-loader!xlsx/dist/xlsx.core.min');*/
+/* 新版导入,局部变量*/
+import XLSX from 'xlsx';//xlsx核心
+import saveAs from 'file-saver'//保存文件用
+
 function generateArray(table) {
     var out = [];
     var rows = table.querySelectorAll('tr');
