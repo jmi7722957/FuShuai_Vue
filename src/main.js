@@ -9,13 +9,14 @@ import VueAxios from "vue-axios";
 import axios from "axios";
 import Echarts from 'echarts'
 import VueRouter from "vue-router";
-
+import XLSX from 'xlsx'
 
 Vue.use(VueAxios, axios)
 Vue.use(Echarts)
 Vue.use(ElementUi)
 Vue.use(ElementCss)
 Vue.use(VueRouter)
+Vue.use(XLSX)
 
 Vue.prototype.$echarts = Echarts
 //开发提醒功能

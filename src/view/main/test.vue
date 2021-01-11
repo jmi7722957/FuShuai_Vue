@@ -1,25 +1,15 @@
 <template>
-  <div class="insuranceDataImport">
-    <el-upload
-        ref="upload"
-        :show-upload-list="false"
-        :default-file-list="defaultList"
-        :on-success="handleSuccess"
-        :on-error="handleError"
-        :format ="['xlsx','xls']"
-        :max-size="fileSize"
-        :on-format-error="handleFormatError"
-        :on-exceeded-size="handleMaxSize"
-        :before-upload="handleBeforeUpload"
-        action="//jsonplaceholder.typicode.com/posts/"
-        style="display: inline-block;width:70px;">
-      <div>导入数据</div>
-    </el-upload>
-
+  <div id="test">
+    <el-input type="file" @click="importf(this)" />
+    <div id="demo"></div>
   </div>
 </template>
 
 <script>
+import XLSX from 'xlsx'
+
+var wb;//读取完成的数据
+var rABS = false; //是否将文件读取为二进制字符串
 export default {
   name: 'test',
   data() {
@@ -34,51 +24,40 @@ export default {
 
   },
   methods: {
-    handleSuccess(res,file){
-      if(res.errcode === 0){
-        this.$message.success("数据导入成功！")
-        this.$refs.upload.clearFiles()
+    importf:function (obj){
+      if(!obj.files) {
+        return;
       }
-    },
-    handleError(error,file){
-      this.$message.error("数据导入失败！")
-    },
-
-    //错误执行
-    handleFormatError (file) {
-      this.$notify.warning({
-        title: '文件格式不正确',
-        desc: '文件 ' + file.name + ' 格式不正确，请上传.xls,.xlsx文件。'
-      });
-    },
-    handleMaxSize (file) {
-      this.$notify.warning({
-        title: '文件大小错误',
-        desc: 'File  ' + file.name + ' 文件大小不得超过'+this.fileSize+'M'
-      });
-    },
-    pro (file) {
-      return new Promise((resolve, reject) => {
-        setTimeout(() => {
-          this.$notify.warning({
-            title: '文件名称错误',
-            desc: 'File  ' + file.name
+      var f = obj.files[0];
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        var data = e.target.result;
+        if(rABS) {
+          wb = XLSX.read(btoa(this.fixdata(data)), {//手动转化
+            type: 'base64'
           });
-          reject(new Error('err'))
-        }, 100)
-      })
-    },
-    //阻止上传//上传前判断用户选择的模板与实际上传的模板是否相同（文件名判断）
-    handleBeforeUpload (file) {
-      let name = '';
-      if(file.name){
-        // name = file.name.replace(/\s/g,"").split('.')[0]
-        name = file.name.split('.')[0]
-        //alert(name)
-        if(name !== this.fileName){
-          return this.pro(file)
+        } else {
+          wb = XLSX.read(data, {
+            type: 'binary'
+          });
         }
+        //wb.SheetNames[0]是获取Sheets中第一个Sheet的名字
+        //wb.Sheets[Sheet名]获取第一个Sheet的数据
+        document.getElementById("demo").innerHTML= JSON.stringify( XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]) );
+      };
+      if(rABS) {
+        reader.readAsArrayBuffer(f);
+      } else {
+        reader.readAsBinaryString(f);
       }
+    },
+    fixdata:function (data) {
+      var o = "",
+          l = 0,
+          w = 10240;
+      for(; l < data.byteLength / w; ++l) o += String.fromCharCode.apply(null, new Uint8Array(data.slice(l * w, l * w + w)));
+      o += String.fromCharCode.apply(null, new Uint8Array(data.slice(l * w)));
+      return o;
     }
   }
 };
