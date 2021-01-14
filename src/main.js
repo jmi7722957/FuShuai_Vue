@@ -10,6 +10,7 @@ import axios from "axios";
 import Echarts from 'echarts'
 import VueRouter from "vue-router";
 import XLSX from 'xlsx'
+import httpUrl from '../src/view/httpUrl'
 
 Vue.use(VueAxios, axios)
 Vue.use(Echarts)
@@ -18,6 +19,7 @@ Vue.use(ElementCss)
 Vue.use(VueRouter)
 Vue.use(XLSX)
 
+Vue.prototype.httpUrl=httpUrl
 Vue.prototype.$echarts = Echarts
 //开发提醒功能
 Vue.config.productionTip = false

@@ -91,7 +91,7 @@ export default {
           //console.log(this.form)
           this.axios({
             method: 'post',
-            url: 'http://localhost:8081/customer/add',
+            url: this.httpUrl.url+'/customer/add',
             data: {
               p_name: this.form.name,
               p_sex: this.form.sex,
@@ -119,7 +119,7 @@ export default {
       //console.log(this.form);
       this.axios({
         method: 'post',
-        url:'http://localhost:8081/customer/edit',
+        url:this.httpUrl.url+'/customer/edit',
         data:{
           p_id:this.form.id,
           p_name:this.form.name,

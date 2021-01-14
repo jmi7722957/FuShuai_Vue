@@ -57,7 +57,7 @@ export default {
           //使用post请求，属性要用data,使用get才是params
           this.axios({
             method: 'post',
-            url: 'http://localhost:8081/user/login',
+            url: this.httpUrl.url+'/user/login',
             data:{
               p_username:this.userForm.username,
               p_password:this.userForm.password

@@ -11,10 +11,12 @@
 <script>
 import axios from 'axios'
 import echarts from 'echarts'
+import bus from "../Bus";
 
 export default {
   name: 'addressEchart',
   mounted () {
+    bus.$on('flushEcharts',this.initialize);
     this.initialize();
   },
   data () {
@@ -30,7 +32,7 @@ export default {
     initialize(){
       var addressList=[];
       var numbersList=[];
-      axios.get('http://localhost:8081/customer/addressEcharts').then(response=>{
+      axios.get(this.httpUrl.url+'/customer/addressEcharts').then(response=>{
         //console.log(response)
         var list=response.data;
         list.forEach(function (element){

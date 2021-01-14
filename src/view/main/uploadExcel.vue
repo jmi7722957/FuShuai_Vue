@@ -9,11 +9,9 @@
       :limit="1"
       :data="excelParam"
       accept=".xlsx,.xls"
-      :show-file-list="true"
+      :show-file-list="false"
       :file-list="this.fileList"
-    >
-<!--    :file-list="fileList"-->
-      <el-button type="text" size="small">导入excle</el-button>
+    >导入excle
     </el-upload>
   </div>
 </template>
@@ -21,9 +19,10 @@
 <script>
 import XLSX from 'xlsx'
 import axios from "axios";
+import bus from '../Bus'
 
 export default {
-  name: 'test',
+  name: 'uploadExcel',
   data() {
     return {
       fileList: [],
@@ -39,7 +38,6 @@ export default {
   mounted: function () {
   },
   methods: {
-// // 文件上传前的前的钩子函数
 // // 参数是上传的文件，若返回false，或返回Primary且被reject，则停止上传
     handelBeforeUpload (file) {
       this.fileList=[];
@@ -54,7 +52,7 @@ export default {
           }
           if (isLt2M && result) {
             //resolve('校验成功!1')//此语句有问题
-            _this.$message.success('校验成功！2');
+            _this.$message.success('校验成功！');
             //校验成功开始上传
             _this.uploadData();
           }else {
@@ -120,13 +118,8 @@ export default {
             // 校验成功resolve
             resolve(true)
           }
-          // excel数据转json字符串传入后台,后转map集合
-          //_this.excelParam.excelData = JSON.stringify(excelJson)
           //直接传map，不用json，后台会统一json处理
           _this.excelParam.excelData =excelJson;
-          //打印一个数据map集合
-          //console.log(JSON.stringify(excelJson))
-          //console.log(excelJson)
         }
         reader.readAsBinaryString(file)
       })
@@ -134,10 +127,10 @@ export default {
     },
 
     uploadData(){
-      console.log(this.excelParam.excelData)
+      //console.log(this.excelParam.excelData)
       this.axios({
         method:'post',
-        url:'http://localhost:8081/customer/uploadExcel',
+        url:this.httpUrl.url+'/customer/uploadExcel',
         data:{
           p_data:this.excelParam.excelData
         }
@@ -145,7 +138,7 @@ export default {
         //console.log(response.data)
         if (response.data === true) {
           this.$message.success('添加成功！');
-          this.resetForm()
+          bus.$emit('flushList')
         } else {
           this.$message.info('添加失败！');
         }

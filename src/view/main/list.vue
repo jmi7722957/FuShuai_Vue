@@ -5,7 +5,7 @@
       <el-col :span="1.5">
         <el-button @click="addCus()">添加客户</el-button>
       </el-col>
-      <el-col :span="1.5"><el-button @click="delCus()">删除</el-button></el-col>
+      <el-col :span="1.5"><el-button @click="delCus()">批量删除</el-button></el-col>
       <el-col :span="1.5">
         <el-input v-model="search" size="max" placeholder="请输入名字"/>
       </el-col>
@@ -15,9 +15,7 @@
 
       <!--导入excel数据-->
       <el-col :span="1.5">
-        <el-input type="file" @change="importExcel(this)" accept=".csv,
-         application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,
-          application/vnd.ms-excel"/>
+        <el-button><upload/></el-button>
       </el-col>
 
       <el-col :span="1.5">
@@ -32,7 +30,9 @@
     <!--ref：引用编号,toLowerCase()将字符串转换为小写-->
     <el-table
       ref="filterTable"
-      :data="customerList.filter(data => !search || data.name.toLowerCase().includes(search.toLowerCase()))"
+      :data="customerList
+      .filter(data => !search || data.name.toLowerCase().includes(search.toLowerCase()))
+      .slice((currentPage-1)*pagesize,currentPage*pagesize)"
       stripe
       border
       @selection-change="getSelectId"
@@ -43,18 +43,18 @@
       <el-table-column
         prop="id"
         label="id"
-        width="180"
+        width="50"
         sortable><!--排序-->
       </el-table-column>
       <el-table-column
         prop="name"
         label="姓名"
-        width="180">
+        width="100">
       </el-table-column>
       <el-table-column
         prop=sex
         label="性别"
-        width="180"
+        width="50"
         :formatter="sexChange"
         :filters="[{text:'男',value:'M'},{text:'女',value:'W'}]"
         :filter-method="filterHandler">
@@ -72,11 +72,11 @@
       <el-table-column
         prop="introducer"
         label="介绍人"
-        width="180">
+        width="100">
       </el-table-column>
       <el-table-column
         label="操作"
-        width="300">
+        width="200">
         <template slot-scope="scope">
           <el-button
             size="mini"
@@ -88,15 +88,20 @@
             @click="editCus(scope.row)">Edit
           </el-button>
 
-          <!--页面序列0开始：scope.$index, 当前行数据：scope.row-->
-          <el-button
-            size="mini"
-            type="danger"
-            @click="delCus(scope.row.id)">Delete
-          </el-button>
         </template>
       </el-table-column>
     </el-table>
+
+    //分页控制
+    <el-pagination
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :current-page="currentPage"
+        :page-sizes=pageNumberList
+    :page-size="pagesize"
+    layout="total, sizes, prev, pager, next, jumper"
+    :total="customerList.length">
+    </el-pagination>
 
     //Echarts图表
     <chart></chart>
@@ -115,6 +120,7 @@
 import axios from 'axios'
 import register from './cusAddEdit'
 import addressEchart from '../echarts/addressEchart'
+import uploadExcel from '../main/uploadExcel'
 import bus from '../Bus'
 import {export_json_to_excel} from '../../vendor/Export2Excel'
 
@@ -129,8 +135,14 @@ export default {
         address:'',
         phone:'',
         introducer:''
-      }],//用于添加编辑
-      query:{
+      }],
+
+      pageNumberList:[5,10,15,20],//选择几条一页下拉
+      currentPage:1, //初始页
+      pagesize:5,    //每页几条数据
+      userList: [],
+
+      query:{//用于添加编辑
         name:'城主',
         sex:'M'
       },
@@ -141,15 +153,25 @@ export default {
   },/*装载完后执行*/
   components:{
     register:register,
-    chart:addressEchart
+    chart:addressEchart,
+    upload:uploadExcel,
   },
   props:['userData'],
   mounted() {
     //console.log(this.userData)
-    axios.get('http://localhost:8081/customer/list').then(response=>(this.customerList=response.data))
+    bus.$on('flushList',this.flushList)
+    this.flushList();
     //xios.get('http://localhost:8081/customer/list').then(response=>(console.log(response.data)))
   },
   methods: {
+    //更改每页多少条触发
+    handleSizeChange: function (size) {
+      this.pagesize = size;
+    },
+    //更改当前页触发
+    handleCurrentChange: function(currentPage){
+      this.currentPage = currentPage;
+    },
     sexChange:function (row, column){
       //获取用户的选中，在form里面监视select的值
       var date = row[column.property];
@@ -166,6 +188,7 @@ export default {
     clearFilter() {
       /*$refs获取所有标注了ref的属性*/
       this.$refs.filterTable.clearFilter();
+      this.search='';
     },
     orderCus(){
     },
@@ -173,16 +196,14 @@ export default {
       this.DisplayBuff = true;
       //query传参要用path来引入，params传参要用name来引入
       /*添加完刷新数据*/
-      axios.get('http://localhost:8081/customer/list').then(response=>(this.customerList=response.data))
+      this.flushList();
     },
     editCus(row){
       this.DisplayBuff = true;
       //console.log(row)
       bus.$emit('giveRow',row)
       //query传参要用path来引入，params传参要用name来引入
-      axios.get('http://localhost:8081/customer/list').then(response=> {
-        this.customerList = response.data;
-      });
+      this.flushList();
     },
     getSelectId(val){
       var li = [];
@@ -191,27 +212,38 @@ export default {
         li.push(id)
       });
       this.$data.delIdList=li;
-      console.log(this.$data.delIdList)
+      //console.log(this.$data.delIdList)
     },
     delCus(){
-      console.log(this.delIdList);
-      this.axios({
-        method:'post',
-        url:'http://localhost:8081/customer/delete',
-        data:{
-          p_del_list:this.delIdList
-        }
-      }).then(response =>{
-        //console.log(response.data)
-        if (response.data===true)
-        {
-          alert("删除成功！")
-          axios.get('http://localhost:8081/customer/list').then(response=>(this.customerList=response.data))
-        }else{
-          alert("删除失败！！！")
-          axios.get('http://localhost:8081/customer/list').then(response=>(this.customerList=response.data))
-        }
-      })
+      this.$confirm('此操作将永久删除, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+          //console.log(this.delIdList);
+          this.axios({
+            method:'post',
+            url:this.httpUrl.url+'/customer/delete',
+            data:{
+              p_del_list:this.delIdList
+            }
+          }).then(response =>{
+            //console.log(response.data)
+            if (response.data===true)
+            {
+              this.$message.success('删除成功！');
+              this.flushList();
+            }else{
+              this.$message.warning('删除失败！');
+              this.flushList();
+            }
+          })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        });
+      });
     },
     /*用于列里面的筛选*/
     filterHandler(value, row, column) {
@@ -221,73 +253,14 @@ export default {
     closeReg(){
       this.$data.DisplayBuff=false;
       bus.$emit('closeReg');
-      axios.get('http://localhost:8081/customer/list').then(response=>(this.customerList=response.data))
+      this.flushList();
     },
 
-    //excel导入数据
-    importExcel(obj) {
-      let _this = this;
-      let inputDOM = this.$refs.inputer;   // 通过DOM取文件数据
-      this.file = event.currentTarget.files[0];
-      var rABS = false; //是否将文件读取为二进制字符串
-      var f = this.file;
-      var reader = new FileReader();
-      //if (!FileReader.prototype.readAsBinaryString) {
-      FileReader.prototype.readAsBinaryString = function(f) {
-        var binary = "";
-        var rABS = false; //是否将文件读取为二进制字符串
-        var pt = this;
-        var wb; //读取完成的数据
-        var outdata;
-        var reader = new FileReader();
-        reader.onload = function(e) {
-          var bytes = new Uint8Array(reader.result);
-          var length = bytes.byteLength;
-          for(var i = 0; i < length; i++) {
-            binary += String.fromCharCode(bytes[i]);
-          }
-          var XLSX = require('xlsx');
-          if(rABS) {
-            wb = XLSX.read(btoa(fixdata(binary)), { //手动转化
-              type: 'base64'
-            });
-          } else {
-            wb = XLSX.read(binary, {
-              type: 'binary'
-            });
-          }
-          // outdata就是你想要的东西 excel导入的数据
-          outdata = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
-          // excel 数据再处理
-          let arr = []
-          outdata.map(v => {
-            //表头数组
-            let obj = {}
-            obj.id = v.ID
-            obj.name = v.姓名
-            obj.sex = v.性别
-            obj.address = v.地址
-            obj.phone = v.电话
-            obj.introducer = v.介绍人
-            arr.push(obj)
-          })
-          _this.accountList = [...arr];
-          console.log( _this.accountList)
-          _this.reload();
-        }
-        reader.readAsArrayBuffer(f);
-      }
-      if(rABS) {
-        reader.readAsArrayBuffer(f);
-      } else {
-        reader.readAsBinaryString(f);
-      }
-    },
     //导出模板
     exportTemplate: function() {
       require.ensure([], () => {
         //const {export_json_to_excel} = require('../../vendor/Export2Excel'); //引入文件　　　　　　
-        const tHeader = ['ID', '姓名', '性别', '地址', '电话','介绍人']; //将对应的属性名转换成中文
+        const tHeader = ['姓名', '性别', '地址', '电话','介绍人']; //将对应的属性名转换成中文
         const data = [];
         export_json_to_excel(tHeader, data, '客户填写模板');
       })
@@ -303,15 +276,17 @@ export default {
         export_json_to_excel(tHeader, data, '客户表excel'); //对应下载文件的名字
       })
     },
+    //导出数据为json格式再写到excel
     formatJson(filterVal, jsonData) {
       return jsonData.map(v => filterVal.map(j => v[j]))
+    },
+    //用于刷新list页面
+    flushList(){
+      //console.log(this.httpUrl.url+'/customer/list')
+      axios.get(this.httpUrl.url+'/customer/list').then(response=>(this.customerList=response.data))
+      bus.$emit('flushEcharts')
     }
   },
-/*  watch:{
-    DisplayBuff:function(val) {
-      this.DisplayBuff = val;
-    }
-  }*/
 }
 </script>
 

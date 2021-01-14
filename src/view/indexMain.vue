@@ -35,7 +35,7 @@ export default {
     return {
       userData:{
         username:'root',
-        annotation:'城主',
+        annotation:'系统管理员',
         id:'1'
       },
       imgurl:logo
