@@ -1,6 +1,7 @@
 <template>
   <div id="list">
 
+    <!--//表格控制-->
     <el-row>
       <el-col :span="1.5">
         <el-button @click="addCus()">添加客户</el-button>
@@ -27,12 +28,13 @@
       </el-col>
     </el-row>
 
+    <!--//表格显示-->
     <!--ref：引用编号,toLowerCase()将字符串转换为小写-->
     <el-table
       ref="filterTable"
       :data="customerList
       .filter(data => !search || data.name.toLowerCase().includes(search.toLowerCase()))
-      .slice((currentPage-1)*pagesize,currentPage*pagesize)"
+      .slice((currentPage-1)*pageSize,currentPage*pageSize)"
       stripe
       border
       @selection-change="getSelectId"
@@ -92,20 +94,21 @@
       </el-table-column>
     </el-table>
 
-    //分页控制
+    <!--//分页控制-->
     <el-pagination
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
         :current-page="currentPage"
         :page-sizes=pageNumberList
-    :page-size="pagesize"
+    :page-size="pageSize"
     layout="total, sizes, prev, pager, next, jumper"
     :total="customerList.length">
     </el-pagination>
 
-    //Echarts图表
+    <!--//Echarts图表-->
     <chart></chart>
 
+    <!--//添加编辑-->
     <el-dialog :visible.sync="DisplayBuff" :before-close="closeReg">
       <div slot="footer" class="dialog-footer">
         <register v-bind:userData="userData"></register>
@@ -139,8 +142,7 @@ export default {
 
       pageNumberList:[5,10,15,20],//选择几条一页下拉
       currentPage:1, //初始页
-      pagesize:5,    //每页几条数据
-      userList: [],
+      pageSize:5,    //每页几条数据
 
       query:{//用于添加编辑
         name:'城主',
@@ -166,7 +168,7 @@ export default {
   methods: {
     //更改每页多少条触发
     handleSizeChange: function (size) {
-      this.pagesize = size;
+      this.pageSize = size;
     },
     //更改当前页触发
     handleCurrentChange: function(currentPage){

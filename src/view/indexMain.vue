@@ -13,7 +13,7 @@
           background-color="Black"
           :router=true>       <!-- router开启index跳转模式 -->
           <el-menu-item index="/list">list</el-menu-item>
-          <el-menu-item index="/test">test</el-menu-item>
+          <el-menu-item index="/order">order</el-menu-item>
         </el-menu>
 
         <router-view v-bind:userData="userData"></router-view>
