@@ -2,9 +2,9 @@
   <div id="order">
     <el-row>
       <el-col :span="1.5">
-        <el-button @click="addCus()">添加客户</el-button>
+        <el-button @click="">添加客户</el-button>
       </el-col>
-      <el-col :span="1.5"><el-button @click="delCus()">批量删除</el-button></el-col>
+      <el-col :span="1.5"><el-button @click="">批量删除</el-button></el-col>
       <el-col :span="1.5">
         <el-input v-model="search" size="max" placeholder="请输入名字"/>
       </el-col>
@@ -14,7 +14,7 @@
     <el-table
         ref="filterTable"
         :data="orderList
-      .filter(data => !search || data.order_address.toLowerCase().includes(search.toLowerCase()))
+      .filter(data => !search || data.orderAddress.toLowerCase().includes(search.toLowerCase()))
       .slice((currentPage-1)*pageSize,currentPage*pageSize)"
         stripe
         border
@@ -30,67 +30,67 @@
           sortable><!--排序-->
       </el-table-column>
       <el-table-column
-          prop="customer_id"
+          prop="customerId"
           label="客户ID"
-          width="100">
+          width="50">
       </el-table-column>
       <el-table-column
-          prop=order_address
+          prop=orderAddress
           label="订单地址"
           width="50">
       </el-table-column>
       <el-table-column
           prop="deposit"
           label="定金"
-          width="180">
+          width="80">
       </el-table-column>
       <el-table-column
-          prop="total_money"
+          prop="totalMoney"
           label="合计金额"
-          width="180">
+          width="80">
       </el-table-column>
       <el-table-column
-          prop="return_money"
+          prop="returnMoney"
           label="退回金额"
-          width="100">
+          width="80">
       </el-table-column>
       <el-table-column
-          prop="end_money"
+          prop="endMoney"
           label="最后金额"
-          width="100">
+          width="80">
       </el-table-column>
       <el-table-column
           prop="remarks"
           label="备注"
           width="100">
       </el-table-column>
-      <el-table-column
-          prop="create_time"
-          label="create_time"
+<!--      <el-table-column
+          prop="createTime"
+          label="createTime"
           width="100">
       </el-table-column>
       <el-table-column
-          prop="update_time"
-          label="update_time"
+          prop="updateTime"
+          label="updateTime"
           width="100">
       </el-table-column>
       <el-table-column
-          prop="create_person"
-          label="create_person"
+          prop="createPerson"
+          label="createPerson"
           width="100">
       </el-table-column>
       <el-table-column
-          prop="update_person"
-          label="update_person"
+          prop="updatePerson"
+          label="updatePerson"
           width="100">
-      </el-table-column>
+      </el-table-column>-->
       <el-table-column
           label="操作"
           width="100">
         <template slot-scope="scope">
           <el-button
               size="mini"
-              @click="editCus(scope.row)">Edit
+              @click="onUpPhoto(scope.row.id)">上传图片
           </el-button>
         </template>
       </el-table-column>
@@ -105,12 +105,21 @@
         layout="total, sizes, prev, pager, next, jumper"
         :total="orderList.length">
     </el-pagination>
+
+    <!--//上传图片窗口-->
+    <el-dialog :visible.sync="DisplayBuff" :before-close="closeUpdate">
+      <div slot="footer" class="dialog-footer">
+        <updatePhoto v-bind:userData="userData"></updatePhoto>
+      </div>
+    </el-dialog>
+
   </div>
 </template>
 
 <script>
 import axios from "axios";
 import bus from "../Bus";
+import updatePhoto from "./updatePhoto";
 
 export default {
   name: 'order',
@@ -118,26 +127,28 @@ export default {
     return {
       orderList:[{
         id:'',
-        customer_id:'',
-        order_address:'',
+        customerId:'',
+        orderAddress:'',
         deposit:'',
-        total_money:'',
-        return_money:'',
+        totalMoney:'',
+        returnMoney:'',
         remarks:'',
-        create_time:'',
-        update_time:'',
-        create_person:'',
-        update_person:''
+        createTime:'',
+        updateTime:'',
+        createPerson:'',
+        updatePerson:''
       }],
-
       pageNumberList:[5,10,15,20],//选择几条一页下拉
       currentPage:1, //初始页
       pageSize:5,    //每页几条数据
-
       delIdList:[],//用于批量删除
       search: '',//搜索框里面的值
-      DisplayBuff: false,
+      DisplayBuff: false,//上传弹出框状态值
     }
+  },
+  props:['userData'],
+  components: {
+    updatePhoto:updatePhoto
   },
   mounted: function () {
     bus.$on('flushList',this.flushList)
@@ -152,7 +163,6 @@ export default {
     handleCurrentChange: function(currentPage){
       this.currentPage = currentPage;
     },
-
     getSelectId(val){
       var li = [];
       val.forEach(function(element){
@@ -162,19 +172,28 @@ export default {
       this.$data.delIdList=li;
       //console.log(this.$data.delIdList)
     },
-
     /*清理筛选*/
     clearFilter() {
       /*$refs获取所有标注了ref的属性*/
       this.$refs.filterTable.clearFilter();
       this.search='';
     },
-
+    onUpPhoto(orderId){
+      this.DisplayBuff=true;
+      /*console.log('进入组件前')
+      console.log(row)*/
+      bus.$emit('getOrderId',orderId)
+    },
+    closeUpdate(){
+      this.DisplayBuff=false;
+    },
     //用于刷新list页面
     flushList(){
       //console.log(this.httpUrl.url+'/customer/list')
-      axios.get(this.httpUrl.url+'/order/list').then(response=>(this.orderList=response.data))
-      bus.$emit('flushEcharts')
+      axios.get(this.httpUrl.url+'/order/list').then(response=>{
+        this.orderList=response.data;
+        //console.log(response.data);
+      })
     }
   }
 };
