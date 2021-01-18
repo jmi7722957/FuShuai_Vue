@@ -1,9 +1,9 @@
 //.是代表文件所在层，@在/build/webpack.base.conf.js中配置的
 import indexMain from '../view/indexMain'
-import order from '../view/main/order'
-import list from '../view/main/list'
+import order from '../view/main/order/order'
+import list from '../view/main/customer/list'
 import login from '../view/user/login'
-import cusAddEdit from '../view/main/cusAddEdit'
+import cusAddEdit from '../view/main/customer/cusAddEdit'
 
 import VueRouter from "vue-router";
 

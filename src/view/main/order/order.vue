@@ -37,14 +37,14 @@
       <el-table-column
           prop=orderAddress
           label="订单地址"
-          width="50">
+          width="300">
       </el-table-column>
       <el-table-column
           prop="deposit"
           label="定金"
           width="80">
       </el-table-column>
-      <el-table-column
+<!--      <el-table-column
           prop="totalMoney"
           label="合计金额"
           width="80">
@@ -58,11 +58,11 @@
           prop="endMoney"
           label="最后金额"
           width="80">
-      </el-table-column>
+      </el-table-column>-->
       <el-table-column
           prop="remarks"
           label="备注"
-          width="100">
+          width="250">
       </el-table-column>
 <!--      <el-table-column
           prop="createTime"
@@ -86,8 +86,12 @@
       </el-table-column>-->
       <el-table-column
           label="操作"
-          width="100">
+          width="300">
         <template slot-scope="scope">
+          <el-button
+              size="mini"
+              @click="showPhoto(scope.row.id)">查看图片
+          </el-button>
           <el-button
               size="mini"
               @click="onUpPhoto(scope.row.id)">上传图片
@@ -96,6 +100,7 @@
       </el-table-column>
     </el-table>
 
+    <!--分页控制-->
     <el-pagination
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
@@ -107,9 +112,22 @@
     </el-pagination>
 
     <!--//上传图片窗口-->
-    <el-dialog :visible.sync="DisplayBuff" :before-close="closeUpdate">
+    <el-dialog :visible.sync="UpDisplayBuff">
       <div slot="footer" class="dialog-footer">
         <updatePhoto v-bind:userData="userData"></updatePhoto>
+      </div>
+    </el-dialog>
+
+    <!--//显示图片窗口-->
+    <el-dialog :visible.sync="ShowDisplayBuff">
+      <div slot="footer" class="dialog-footer">
+        <!--<img src="static/image/fushuai.jpg" alt="...">-->
+        <el-carousel trigger="click" height="500px">
+          <!--:key根据什么id循环 contain包含-->
+          <el-carousel-item v-for="photo in photoList" :key="photo.id">
+            <el-image :src="staPath+photo.name" fit="contain"></el-image>
+          </el-carousel-item>
+        </el-carousel>
       </div>
     </el-dialog>
 
@@ -118,8 +136,8 @@
 
 <script>
 import axios from "axios";
-import bus from "../Bus";
-import updatePhoto from "./updatePhoto";
+import bus from "../../Bus";
+import updatePhoto from "./uploadPhoto";
 
 export default {
   name: 'order',
@@ -138,17 +156,26 @@ export default {
         createPerson:'',
         updatePerson:''
       }],
+      photoList:[{
+        id:'',
+        name:'',
+        orderId:'',
+        url:''
+      }],
       pageNumberList:[5,10,15,20],//选择几条一页下拉
       currentPage:1, //初始页
       pageSize:5,    //每页几条数据
       delIdList:[],//用于批量删除
       search: '',//搜索框里面的值
-      DisplayBuff: false,//上传弹出框状态值
+      UpDisplayBuff: false,//上传弹出框状态值
+      ShowDisplayBuff: false,//显示弹出框状态值
+      te:'localhost:8080/D://test//20190315165001_5y2.jpg',
+      staPath:'static/image/'
     }
   },
   props:['userData'],
   components: {
-    updatePhoto:updatePhoto
+    updatePhoto:updatePhoto,
   },
   mounted: function () {
     bus.$on('flushList',this.flushList)
@@ -179,13 +206,19 @@ export default {
       this.search='';
     },
     onUpPhoto(orderId){
-      this.DisplayBuff=true;
+      this.UpDisplayBuff=true;
       /*console.log('进入组件前')
       console.log(row)*/
       bus.$emit('getOrderId',orderId)
     },
-    closeUpdate(){
-      this.DisplayBuff=false;
+    showPhoto(orderId){
+      this.ShowDisplayBuff=true;
+      this.axios.post(this.httpUrl.url+'/photo/showPhoto', {p_orderId: orderId})
+      .then(response=>{
+        //console.log(response.data)
+        this.photoList=response.data
+        console.log(this.photoList)
+      })
     },
     //用于刷新list页面
     flushList(){

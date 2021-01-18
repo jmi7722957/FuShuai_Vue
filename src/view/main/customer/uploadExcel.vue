@@ -19,7 +19,7 @@
 <script>
 import XLSX from 'xlsx'
 import axios from "axios";
-import bus from '../Bus'
+import bus from '../../Bus'
 
 export default {
   name: 'uploadExcel',

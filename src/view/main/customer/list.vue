@@ -122,10 +122,10 @@
 <script>
 import axios from 'axios'
 import register from './cusAddEdit'
-import addressEchart from '../echarts/addressEchart'
-import uploadExcel from '../main/uploadExcel'
-import bus from '../Bus'
-import {export_json_to_excel} from '../../vendor/Export2Excel'
+import addressEchart from '../../echarts/addressEchart'
+import uploadExcel from './uploadExcel'
+import bus from '../../Bus'
+import {export_json_to_excel} from '../../../vendor/Export2Excel'
 
 export default {
   name: 'list',
