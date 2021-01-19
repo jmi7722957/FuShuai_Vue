@@ -2,11 +2,11 @@
   <div id="order">
     <el-row>
       <el-col :span="1.5">
-        <el-button @click="">添加客户</el-button>
+        <el-button @click="">添加订单</el-button>
       </el-col>
       <el-col :span="1.5"><el-button @click="">批量删除</el-button></el-col>
       <el-col :span="1.5">
-        <el-input v-model="search" size="max" placeholder="请输入名字"/>
+        <el-input v-model="search" size="max" placeholder="请输入订单地址"/>
       </el-col>
     </el-row>
 
@@ -26,13 +26,13 @@
       <el-table-column
           prop="id"
           label="id"
-          width="50"
+          width="80"
           sortable><!--排序-->
       </el-table-column>
       <el-table-column
           prop="customerId"
           label="客户ID"
-          width="50">
+          width="80">
       </el-table-column>
       <el-table-column
           prop=orderAddress
@@ -112,23 +112,23 @@
     </el-pagination>
 
     <!--//上传图片窗口-->
-    <el-dialog :visible.sync="UpDisplayBuff">
+    <el-dialog :visible.sync="UpDisplayBuff" width="25%">
       <div slot="footer" class="dialog-footer">
         <updatePhoto v-bind:userData="userData"></updatePhoto>
       </div>
     </el-dialog>
 
     <!--//显示图片窗口-->
-    <el-dialog :visible.sync="ShowDisplayBuff">
-      <div slot="footer" class="dialog-footer">
+    <el-dialog :visible.sync="ShowDisplayBuff" width="500px" height="600px">
         <!--<img src="static/image/fushuai.jpg" alt="...">-->
-        <el-carousel trigger="click" height="500px">
+        <el-carousel trigger="click" indicator-position="outside">
           <!--:key根据什么id循环 contain包含-->
           <el-carousel-item v-for="photo in photoList" :key="photo.id">
-            <el-image :src="staPath+photo.name" fit="contain"></el-image>
+            <!--<span class="demonstration">{{ photo.id }}</span>-->
+              <el-button class="el-icon-delete" @click="delPhoto(photo.id,photo.url)"></el-button>
+              <el-image :src="staPath+photo.name" fit="scale-down"/>
           </el-carousel-item>
         </el-carousel>
-      </div>
     </el-dialog>
 
   </div>
@@ -219,6 +219,25 @@ export default {
         this.photoList=response.data
         console.log(this.photoList)
       })
+    },
+    delPhoto(photoId,photoUrl){
+      this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.axios.post(this.httpUrl.url+'/photo/del',{p_photo_id:photoId,p_photo_url:photoUrl})
+        .then(response=>{
+          if (response.data===true){
+            this.$message.success('删除成功')
+          }else {
+            this.$message.warning('删除失败')
+          }
+        })
+
+      }).catch(() => {
+        this.$message.info('已取消删除')
+      });
     },
     //用于刷新list页面
     flushList(){

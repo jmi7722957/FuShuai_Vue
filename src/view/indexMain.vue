@@ -10,10 +10,9 @@
       <el-main>
         <el-menu
           mode="horizontal"
-          background-color="Black"
           :router=true>       <!-- router开启index跳转模式 -->
-          <el-menu-item index="/list">list</el-menu-item>
-          <el-menu-item index="/order">order</el-menu-item>
+          <el-menu-item index="/list">客户管理</el-menu-item>
+          <el-menu-item index="/order">订单管理</el-menu-item>
         </el-menu>
 
         <router-view v-bind:userData="userData"></router-view>
@@ -65,5 +64,14 @@ export default {
 </script>
 
 <style scoped>
-
+ #main{
+    /*background-color: #615461;*/
+  }
+ .el-menu {
+   background-color: #6f0404;
+ }
+ .el-menu-item{
+   font-weight:bold;
+   color: #f3eaea;
+ }
 </style>

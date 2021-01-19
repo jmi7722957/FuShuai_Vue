@@ -45,7 +45,7 @@
       <el-table-column
         prop="id"
         label="id"
-        width="50"
+        width="80"
         sortable><!--排序-->
       </el-table-column>
       <el-table-column
@@ -56,7 +56,7 @@
       <el-table-column
         prop=sex
         label="性别"
-        width="50"
+        width="80"
         :formatter="sexChange"
         :filters="[{text:'男',value:'M'},{text:'女',value:'W'}]"
         :filter-method="filterHandler">

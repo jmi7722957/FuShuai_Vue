@@ -44,11 +44,11 @@ export default {
 
     },
     errorMsg(){
-      this.$message.error('上传出错，文件后缀不正确，或文件超过20m，请检查文件格式')
+      this.$message.error('上传出错，文件后缀不正确，或文件超过2m，或文件已存在')
     },
     beforeAvatarUpload(file) {
       const isJPG = file.type === 'image/jpeg';
-      const isLt2M = file.size / 1024 / 1024 < 20;
+      const isLt2M = file.size / 1024 / 1024 < 2;
       if (!isJPG) {
         this.$message.error('上传头像图片只能是 JPG 格式!');
       }
