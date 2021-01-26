@@ -33,9 +33,9 @@ export default {
   data(){
     return {
       userData:{
-        username:'root',
-        annotation:'系统管理员',
-        id:'1'
+        username:'',
+        annotation:'',
+        id:''
       },
       imgurl:logo
     }
