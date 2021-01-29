@@ -169,7 +169,7 @@ export default {
       search: '',//搜索框里面的值
       UpDisplayBuff: false,//上传弹出框状态值
       ShowDisplayBuff: false,//显示弹出框状态值
-      te:'localhost:8080/D://test//20190315165001_5y2.jpg',
+      //te:'localhost:8080/D://test//20190315165001_5y2.jpg',
       staPath:'static/image/'
     }
   },
