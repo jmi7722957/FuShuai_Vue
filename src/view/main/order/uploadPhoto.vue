@@ -39,7 +39,7 @@ export default {
       if(response){
         this.$message.success('上传成功！')
       }else {
-        this.$message.warning('上传失败！')
+        this.$message.warning('上传失败！或图片已存在')
       }
 
     },

@@ -2,7 +2,7 @@
   <div id="order">
     <el-row>
       <el-col :span="1.5">
-        <el-button @click="">添加订单</el-button>
+        <el-button @click="AddEditDisplayBuff = true">添加订单</el-button>
       </el-col>
       <el-col :span="1.5"><el-button @click="">批量删除</el-button></el-col>
       <el-col :span="1.5">
@@ -86,11 +86,15 @@
       </el-table-column>-->
       <el-table-column
           label="操作"
-          width="300">
+          width="400">
         <template slot-scope="scope">
           <el-button
               size="mini"
-              @click="showPhoto(scope.row.id)">查看图片
+              @click="showPhoto(scope.row.id)">管理图片
+          </el-button>
+          <el-button
+              size="mini"
+              @click="jumpPhotos(scope.row.id)">展示图片
           </el-button>
           <el-button
               size="mini"
@@ -110,6 +114,15 @@
         layout="total, sizes, prev, pager, next, jumper"
         :total="orderList.length">
     </el-pagination>
+
+    <!--//添加编辑-->
+    <el-dialog :visible.sync="AddEditDisplayBuff" :before-close="handleClose" width="25%">
+      <div slot="footer" class="dialog-footer">
+        <AddEdit v-bind:userData="userData"></AddEdit>
+        <el-button @click="clearAddEdit">清 空</el-button>
+        <el-button type="primary" @click="BusAdd">确 定</el-button>
+      </div>
+    </el-dialog>
 
     <!--//上传图片窗口-->
     <el-dialog :visible.sync="UpDisplayBuff" width="25%">
@@ -138,6 +151,7 @@
 import axios from "axios";
 import bus from "../../Bus";
 import updatePhoto from "./uploadPhoto";
+import AddEdit from "./orderAddEdit"
 
 export default {
   name: 'order',
@@ -168,18 +182,21 @@ export default {
       delIdList:[],//用于批量删除
       search: '',//搜索框里面的值
       UpDisplayBuff: false,//上传弹出框状态值
-      ShowDisplayBuff: false,//显示弹出框状态值
-      //te:'localhost:8080/D://test//20190315165001_5y2.jpg',
-      staPath:'static/image/'
+      ShowDisplayBuff: false,//管理图片弹出框状态值
+      AddEditDisplayBuff:false,//添加弹出框
+      staPath:'static/image/',
+      //staPath:'D:\\workspace\\FuShuai_Vue\\static\\image',
     }
   },
   props:['userData'],
   components: {
     updatePhoto:updatePhoto,
+    AddEdit:AddEdit,
   },
   mounted: function () {
-    bus.$on('flushList',this.flushList)
     this.flushList();
+    bus.$on('flushList',this.flushList)
+    bus.$on('closeAddDialog',this.closeAddDialog)
   },
   methods: {
     //更改每页多少条触发
@@ -217,7 +234,7 @@ export default {
       .then(response=>{
         //console.log(response.data)
         this.photoList=response.data
-        console.log(this.photoList)
+        //console.log(this.photoList)
       })
     },
     delPhoto(photoId,photoUrl){
@@ -231,9 +248,10 @@ export default {
           if (response.data===true){
             this.$message.success('删除成功')
           }else {
-            this.$message.warning('删除失败')
+            this.$message.warning('，图片已删除或删除失败')
           }
         })
+        this.ShowDisplayBuff=false;
 
       }).catch(() => {
         this.$message.info('已取消删除')
@@ -246,6 +264,26 @@ export default {
         this.orderList=response.data;
         //console.log(response.data);
       })
+    },
+    BusAdd(){
+      this.AddEditDisplayBuff=true;
+      bus.$emit('BusAddOrder',this.userData)
+    },
+    handleClose(done) {
+      this.$confirm('确认关闭？')
+          .then(_ => {
+            done();
+          })
+          .catch(_ => {});
+    },
+    clearAddEdit(){
+      bus.$emit('clearOrderForm')
+    },
+    closeAddDialog(){
+      this.AddEditDisplayBuff=false;
+    },
+    jumpPhotos(orderId){
+      this.$router.push({path:'/showImages',query:{orderId:orderId}})
     }
   }
 };

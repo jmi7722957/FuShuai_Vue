@@ -4,6 +4,8 @@ import order from '../view/main/order/order'
 import list from '../view/main/customer/list'
 import login from '../view/user/login'
 import cusAddEdit from '../view/main/customer/cusAddEdit'
+import showImages from '../view/main/order/showImages'
+
 
 import VueRouter from "vue-router";
 
@@ -36,6 +38,12 @@ export default new VueRouter({
       name: 'login',
       component: login,
       meta: {title: '欢迎登陆',keepalive: false}
+    },
+    {
+      path: '/showImages',
+      name: 'showImages',
+      component: showImages,
+      meta: {title: '客户样板图片',keepalive: false}
     }
   ]
 })

@@ -71,7 +71,7 @@ export default {
               this.$router.push({name:'main',params:{username:username,annotation:annotation}})
               //this.$router.replace('/login') //替代,url
             }else{
-              alert("登录失败");//跳转,name
+              this.$message.warning('登录失败')
             }
           })
     },

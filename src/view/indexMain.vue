@@ -54,7 +54,7 @@ export default {
         this.userData = this.$route.params
       }
       if (this.userData.username===''){
-        alert('您未登录');
+        this.$message.warning('您未登陆')
         this.$router.push('login');
       }else {
       }
