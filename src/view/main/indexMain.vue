@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import logo from  '../img/fushuai.jpg'
+import logo from '../../img/fushuai.jpg'
 
 
 export default {

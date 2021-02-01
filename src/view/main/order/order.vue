@@ -94,7 +94,7 @@
           </el-button>
           <el-button
               size="mini"
-              @click="jumpPhotos(scope.row.id)">展示图片
+              @click="qrCode(scope.row.id)">展示图片
           </el-button>
           <el-button
               size="mini"
@@ -144,6 +144,11 @@
         </el-carousel>
     </el-dialog>
 
+    <!--二维码页面-->
+    <el-dialog title="扫码查看图片" :visible.sync="CodeDisplayBuff" width="15%">
+      <div id="qrcode"></div>
+    </el-dialog>
+
   </div>
 </template>
 
@@ -152,6 +157,7 @@ import axios from "axios";
 import bus from "../../Bus";
 import updatePhoto from "./uploadPhoto";
 import AddEdit from "./orderAddEdit"
+import QRCode from 'qrcodejs2'
 
 export default {
   name: 'order',
@@ -184,7 +190,9 @@ export default {
       UpDisplayBuff: false,//上传弹出框状态值
       ShowDisplayBuff: false,//管理图片弹出框状态值
       AddEditDisplayBuff:false,//添加弹出框
+      CodeDisplayBuff: false,
       staPath:'static/image/',
+      codeText:'',
       //staPath:'D:\\workspace\\FuShuai_Vue\\static\\image',
     }
   },
@@ -282,8 +290,22 @@ export default {
     closeAddDialog(){
       this.AddEditDisplayBuff=false;
     },
-    jumpPhotos(orderId){
+/*    jumpPhotos(orderId){
       this.$router.push({path:'/showImages',query:{orderId:orderId}})
+    },*/
+    qrCode(orderId) {
+      this.CodeDisplayBuff = true;
+      this.$nextTick(function () {
+        document.getElementById("qrcode").innerHTML = "";
+        let qrcode = new QRCode("qrcode", {
+          width: 150,
+          height: 150,
+          text: this.httpUrl.vueUrl+'/#/showImages?orderId='+orderId,
+          colorDark: "#feffff",
+          colorLight: "#000000"
+        });
+        console.log(qrcode)
+      });
     }
   }
 };
