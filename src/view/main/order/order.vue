@@ -94,7 +94,11 @@
           </el-button>
           <el-button
               size="mini"
-              @click="qrCode(scope.row.id)">展示图片
+              @click="qrCode(scope.row.id)">扫码查看
+          </el-button>
+          <el-button
+              size="mini"
+              @click="jumpPhotos(scope.row.id)">查看图片
           </el-button>
           <el-button
               size="mini"
@@ -290,9 +294,9 @@ export default {
     closeAddDialog(){
       this.AddEditDisplayBuff=false;
     },
-/*    jumpPhotos(orderId){
+    jumpPhotos(orderId){
       this.$router.push({path:'/showImages',query:{orderId:orderId}})
-    },*/
+    },
     qrCode(orderId) {
       this.CodeDisplayBuff = true;
       this.$nextTick(function () {
