@@ -2,10 +2,18 @@
   <div id="main">
     <el-container>
       <el-header height="200">
-        <div class="block">
-          <el-image style="height: 100px" :src=imgurl fit="contain"></el-image>
-          <span>欢迎用户：{{userData.username}}</span>
-        </div>
+        <el-row>
+          <el-col :span="6">
+            <el-image style="height: 100px" :src=imgurl fit="contain"></el-image>
+          </el-col>
+          <el-col :span="4">
+            <el-image src="/static/image/头像.jpg" style="height: 100px"></el-image>
+            <span>欢迎用户：{{userData.username}}</span>
+          </el-col>
+          <el-col :span="4">
+            <QQMusic id="music"></QQMusic>
+          </el-col>
+        </el-row>
       </el-header>
       <el-main>
         <el-menu
@@ -25,11 +33,12 @@
 </template>
 
 <script>
-import logo from '../../img/fushuai.jpg'
-
+import logo from '../../resources/fushuai.jpg'
+import QQMusic from "../../QQSpace/Main/QQMusic";
 
 export default {
   name: 'indexMain',
+  components: {QQMusic},
   data(){
     return {
       userData:{
@@ -40,6 +49,7 @@ export default {
       imgurl:logo
     }
   },
+  props:['QQMusic'],
   created () {
     this.getUser()
   },
@@ -65,8 +75,11 @@ export default {
 
 <style scoped>
  #main{
-    /*background-color: #615461;*/
+    /*background-color: #2b2b2b;*/
   }
+ #music{
+   height: 100px;
+ }
  .el-menu {
    background-color: #6f0404;
  }

@@ -37,7 +37,7 @@ export default {
               //循环遍历转换成想要的图片地址数组
               list.forEach(function(element){
                 let name=element.name;
-                urlsList.push('static/image/'+name);
+                urlsList.push('static/baseData/image/'+name);
               });
               this.urls=urlsList;
             });

@@ -84,6 +84,7 @@ export default {
               this.$message.success('添加成功')
               this.resetForm();
               bus.$emit('closeAddDialog')
+              bus.$emit('flushOrderList');
             }else{
               this.$message.error('添加失败')
             }

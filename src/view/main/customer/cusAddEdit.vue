@@ -103,10 +103,13 @@ export default {
           }).then(response => {
             //console.log(response.data)
             if (response.data === true) {
-              alert('添加成功！')
-              this.resetForm()
+              this.$message.success('添加成功！')
+              //清空表格,刷新列表
+              this.resetForm();
+              bus.$emit('closeAddDia');
+              bus.$emit('flushList');
             } else {
-              alert('添加失败！！！')
+              this.$message.info('添加失败！！！')
             }
           })
         }else{
@@ -132,9 +135,11 @@ export default {
         //console.log(response.data)
         if (response.data===true)
         {
-          alert("修改成功！")
+          this.$message.success("修改成功！")
+          bus.$emit('closeAddDia');
+          bus.$emit('flushList');
         }else{
-          alert("修改失败！！！")
+          this.$message.info("修改失败！！！")
         }
       })
     },

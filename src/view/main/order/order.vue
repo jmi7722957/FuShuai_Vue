@@ -4,7 +4,7 @@
       <el-col :span="1.5">
         <el-button @click="AddEditDisplayBuff = true">添加订单</el-button>
       </el-col>
-      <el-col :span="1.5"><el-button @click="">批量删除</el-button></el-col>
+      <el-col :span="1.5"><el-button @click="delOrder">批量删除</el-button></el-col>
       <el-col :span="1.5">
         <el-input v-model="search" size="max" placeholder="请输入订单地址"/>
       </el-col>
@@ -136,14 +136,14 @@
     </el-dialog>
 
     <!--//显示图片窗口-->
-    <el-dialog :visible.sync="ShowDisplayBuff" width="500px" height="600px">
+    <el-dialog :visible.sync="ShowDisplayBuff" width="600px">
         <!--<img src="static/image/fushuai.jpg" alt="...">-->
         <el-carousel trigger="click" indicator-position="outside">
           <!--:key根据什么id循环 contain包含-->
           <el-carousel-item v-for="photo in photoList" :key="photo.id">
             <!--<span class="demonstration">{{ photo.id }}</span>-->
-              <el-button class="el-icon-delete" @click="delPhoto(photo.id,photo.url)"></el-button>
-              <el-image :src="staPath+photo.name" fit="scale-down"/>
+              <el-button size="mini" class="el-icon-delete" @click="delPhoto(photo.id,photo.url)"></el-button>
+              <el-image style="width: auto;height: 300px;float: left" :src="staPath+photo.name" fit="scale-down"/>
           </el-carousel-item>
         </el-carousel>
     </el-dialog>
@@ -195,9 +195,8 @@ export default {
       ShowDisplayBuff: false,//管理图片弹出框状态值
       AddEditDisplayBuff:false,//添加弹出框
       CodeDisplayBuff: false,
-      staPath:'static/image/',
+      staPath:'static/baseData/image/',
       codeText:'',
-      //staPath:'D:\\workspace\\FuShuai_Vue\\static\\image',
     }
   },
   props:['userData'],
@@ -207,7 +206,7 @@ export default {
   },
   mounted: function () {
     this.flushList();
-    bus.$on('flushList',this.flushList)
+    bus.$on('flushOrderList',this.flushList)
     bus.$on('closeAddDialog',this.closeAddDialog)
   },
   methods: {
@@ -310,7 +309,45 @@ export default {
         });
         console.log(qrcode)
       });
-    }
+    },
+
+    delOrder(){
+      this.$confirm('此操作将永久删除, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        //console.log(this.delIdList);
+
+        this.axios({
+          method:'post',
+          url:this.httpUrl.url+'/order/delete',
+          data:{
+            p_del_list:this.delIdList,
+          }
+        }).then(response =>{
+          //console.log(response.data)
+          if (response.data.length===0)
+          {
+            this.$message.success('删除成功！');
+            this.flushList();
+          }else{
+            this.$message({
+              showClose: true,
+              message: '删除失败,请先删除订单ID:'+response.data+'里面的照片',
+              duration: 10000,
+              type: 'warning'
+            });
+            this.flushList();
+          }
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        });
+      });
+    },
   }
 };
 </script>

@@ -8,7 +8,7 @@
       </el-col>
       <el-col :span="1.5"><el-button @click="delCus()">批量删除</el-button></el-col>
       <el-col :span="1.5">
-        <el-input v-model="search" size="max" placeholder="请输入名字"/>
+        <el-input v-model="search" size="max" placeholder="名字/地址"/>
       </el-col>
       <el-col :span="1.5">
         <el-button @click="clearFilter">清除所有过滤器</el-button>
@@ -33,7 +33,9 @@
     <el-table
       ref="filterTable"
       :data="customerList
-      .filter(data => !search || data.name.toLowerCase().includes(search.toLowerCase()))
+      .filter(data => !search
+      || data.name.toLowerCase().includes(search.toLowerCase())
+      || data.address.toLowerCase().includes(search.toLowerCase()))
       .slice((currentPage-1)*pageSize,currentPage*pageSize)"
       stripe
       border
@@ -150,7 +152,7 @@ export default {
       },
       delIdList:[],//用于批量删除
       search: '',//搜索框里面的值
-      DisplayBuff: false,
+      DisplayBuff: false,//弹出框
     }
   },/*装载完后执行*/
   components:{
@@ -162,6 +164,7 @@ export default {
   mounted() {
     //console.log(this.userData)
     bus.$on('flushList',this.flushList)
+    bus.$on('closeAddDia',this.closeAddDia)
     this.flushList();
     //xios.get('http://localhost:8081/customer/list').then(response=>(console.log(response.data)))
   },
@@ -287,6 +290,9 @@ export default {
       //console.log(this.httpUrl.url+'/customer/list')
       axios.get(this.httpUrl.url+'/customer/list').then(response=>(this.customerList=response.data))
       bus.$emit('flushEcharts')
+    },
+    closeAddDia(){
+      this.DisplayBuff=false;
     }
   },
 }
