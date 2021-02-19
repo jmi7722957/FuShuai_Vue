@@ -2,23 +2,29 @@
   <div id="QQMusicDiv">
     <el-row>
       <!--播放暂停--><!--音量按钮-->
-      <el-col>
+      <el-col :span="2.5">
           <el-button
               @click="play"
               id="play"
               :icon="music.isPlay?'el-icon-video-pause':'el-icon-caret-right'"
               circle>
           </el-button>
+      </el-col>
+      <el-col :span="2.5">
           <el-button
               @click="changeVolume(-10)"
               icon="el-icon-minus"
               circle>
           </el-button>
+      </el-col>
+      <el-col :span="2.5">
           <el-button
               @click="changeVolume(10)"
               icon="el-icon-plus"
               circle>
           </el-button>
+      </el-col>
+      <el-col :span="2.5">
           <el-button
                 @click="next()"
                 icon="el-icon-d-arrow-right"

@@ -3,16 +3,21 @@
     <el-container>
       <el-header height="200">
         <el-row>
-          <el-col :span="6">
+          <el-col :span="10">
             <el-image style="height: 100px" :src=imgurl fit="contain"></el-image>
           </el-col>
-          <el-col :span="4">
-            <el-image src="/static/image/头像.jpg" style="height: 100px"></el-image>
-            <span>欢迎用户：{{userData.username}}</span>
-          </el-col>
-          <el-col :span="4">
+            <el-col :span="4">
+              <el-image src="/static/image/头像.jpg" style="height: 100px;float: left"></el-image>
+            </el-col>
+            <el-col :span="3">
+              <el-row><span>欢迎用户：</span></el-row>
+              <el-row><span>{{userData.annotation}}</span></el-row>
+            </el-col>
+
+          <el-col :span="6">
             <QQMusic id="music"></QQMusic>
           </el-col>
+
         </el-row>
       </el-header>
       <el-main>

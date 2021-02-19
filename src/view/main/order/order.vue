@@ -140,10 +140,10 @@
         <!--<img src="static/image/fushuai.jpg" alt="...">-->
         <el-carousel trigger="click" indicator-position="outside">
           <!--:key根据什么id循环 contain包含-->
-          <el-carousel-item v-for="photo in photoList" :key="photo.id">
+          <el-carousel-item id="ImgFor" v-for="photo in photoList" :key="photo.id">
             <!--<span class="demonstration">{{ photo.id }}</span>-->
-              <el-button size="mini" class="el-icon-delete" @click="delPhoto(photo.id,photo.url)"></el-button>
-              <el-image style="width: auto;height: 300px;float: left" :src="staPath+photo.name" fit="scale-down"/>
+            <el-button id="ImgButton" size="mini" class="el-icon-delete" @click="delPhoto(photo.id,photo.url)"></el-button>
+            <el-image id="elImg" style="width: auto;height: 300px" :src="staPath+photo.name" fit="scale-down"/>
           </el-carousel-item>
         </el-carousel>
     </el-dialog>
@@ -353,4 +353,12 @@ export default {
 </script>
 
 <style scoped>
+  #ImgFor{
+    display: flex;
+    display: -webkit-flex;
+    align-items: start;
+    justify-content:center;
+  }
+  #ImgButton{
+  }
 </style>

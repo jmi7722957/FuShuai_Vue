@@ -11,19 +11,20 @@
         <el-input v-model="search" size="max" placeholder="名字/地址"/>
       </el-col>
       <el-col :span="1.5">
-        <el-button @click="clearFilter">清除所有过滤器</el-button>
+        <el-button @click="clearFilter">清除过滤器</el-button>
       </el-col>
-
+    </el-row>
+    <el-row>
       <!--导入excel数据-->
-      <el-col :span="1.5">
+      <el-col :span="3.5">
         <el-button><upload/></el-button>
       </el-col>
 
-      <el-col :span="1.5">
+      <el-col :span="3">
         <el-button @click="exportTemplate">下载模板</el-button>
       </el-col>
 
-      <el-col :span="1.5">
+      <el-col :span="3">
         <el-button @click="exportExcel">导出excel</el-button>
       </el-col>
     </el-row>
